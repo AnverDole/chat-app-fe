@@ -20,8 +20,8 @@ export class ChatSocketService {
             this.socket.disconnect();
             this.socket = null;
         }
-
-        this.socket = io(process.env.NEXT_PUBLIC_API_BASE_URL, {
+        
+        this.socket = io(process.env.NEXT_PUBLIC_WEB_SOCKET_ENTRY_HOST, {
             auth: { token },
         });
 
