@@ -66,7 +66,7 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
                 m.downloaded_at = !m.downloaded_at ? null : new Date(m.downloaded_at);
                 m.seen_at = !m.seen_at ? null : new Date(m.seen_at);
                 m.isMe = auth.user.id == m.sender_id;
-                
+
                 return m;
             }).toReversed();
 
@@ -87,6 +87,22 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
         fetchMessages();
     }, [receiver.id]);
 
+
+    const sentByMeCount = useRef(0);
+    useEffect(() => {
+        let sentByMeCount_ = (chatMaster.context.allChats?.[receiver?.id.toString()] ?? [])
+            .filter(m => m.isMe)
+            .length;
+        if (sentByMeCount_ == sentByMeCount.current)
+            return;
+        sentByMeCount.current = sentByMeCount_;
+
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+
+    }, [chatMaster.context.allChats?.[receiver?.id.toString()]]);
+
     return (
         <div
             className="border rounded-0"
@@ -103,7 +119,7 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
                     {(chatMaster?.context.allChats?.[receiver.id.toString()] ?? [])?.map(msg => (
                         <VisibilitySensor
                             key={msg.id}
-                            onVisible={() => {(!msg.isMe &&!msg.seen_at) && onSeen(msg.id.toString(), receiver.id) ;console.log(!!msg.seen_at)}}
+                            onVisible={() => { (!msg.isMe && !msg.seen_at) && onSeen(msg.id.toString(), receiver.id); console.log(!!msg.seen_at) }}
                             once={true}>
                             <div className="px-3">
                                 {determineDateBadgeVisibility(msg) && <div

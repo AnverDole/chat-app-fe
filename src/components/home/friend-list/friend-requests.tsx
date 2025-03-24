@@ -4,12 +4,13 @@ import UserProfilePicture from "components/user-profile-picture";
 import { useAuth } from "context/auth-context";
 import Friend from "interfaces/friend";
 import { Key, useEffect, useState } from "react";
-import { Check, Dash, PersonDash, PersonPlus, Search } from "react-bootstrap-icons";
+import { Check, Dash, PersonDash, PersonPlus, Plus, Search } from "react-bootstrap-icons";
 import toast from "react-hot-toast";
 import { approveRequest, cancelRequest, findPeople, FriendStatus, FUser, getAllRequests, rejectRequest, sendRequest } from "services/friendsService";
 import AddFriendButton from "./add-friend-button";
 import User from "interfaces/user";
 import LdsRollerLoader from "components/loaders/lds-roller/lds-roller";
+import FindFriendModal from "./find-friend-modal";
 
 
 export default function FriendRequests() {
@@ -18,6 +19,7 @@ export default function FriendRequests() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSearchApplied, setIsSearchApplied] = useState(false);
     const auth = useAuth();
+    const [showFindFriendsModal, setShowFindFriendsModal] = useState<boolean>(false);
 
     const fetchRequests = async () => {
         setResults([]);
@@ -191,7 +193,7 @@ export default function FriendRequests() {
                                                 updateFriendStatus(friend, FriendStatus.None)
                                             })}
                                         >
-                                            <Dash size={20} /> Reject 
+                                            <Dash size={20} /> Reject
                                         </button>
                                         <button
                                             className='ms-2 btn btn-outline-success rounded-pill'
@@ -199,7 +201,7 @@ export default function FriendRequests() {
                                                 updateFriendStatus(friend, FriendStatus.Friend)
                                             })}
                                         >
-                                            <Check size={20} /> Approve 
+                                            <Check size={20} /> Approve
                                         </button>
 
                                     </div>}
@@ -256,7 +258,14 @@ export default function FriendRequests() {
                                     <path d="M793.5,701.477a22,22,0,1,1,22-22A22.02489,22.02489,0,0,1,793.5,701.477Zm0-42a20,20,0,1,0,20,20A20.02229,20.02229,0,0,0,793.5,659.477Z" transform="translate(-161.5 -83.59531)" fill="#3f3d56" /></svg>
 
                                 <p className="text-center">You don’t have any friend requests yet. Click the button below to find and connect with them!</p>
-
+                                <button className={`btn btn-success rounded-circle p-0`}
+                                    onClick={() => setShowFindFriendsModal(true)}
+                                    style={{
+                                        width: 50,
+                                        height: 50,
+                                    }}>
+                                    <Plus size={30} />
+                                </button>
 
                             </div>}
 
@@ -319,12 +328,22 @@ export default function FriendRequests() {
 
                 </div>
 
-                <AddFriendButton
-                    position="absolute"
-                    bottom={results.length <= 0 && !isSearchApplied ? 100 : 50}
-                    right={results.length <= 0 && !isSearchApplied ? 150 : 30}
-                    newFriendAdded={fetchRequests} />
+                {results.length > 0 && <button className={`position-absolute btn btn-success rounded-circle p-0`}
+                    onClick={() => setShowFindFriendsModal(true)}
+                    style={{
+                        width: 50,
+                        height: 50,
+                        bottom: 100,
+                        right: 30,
+                    }}>
+                    <Plus size={30} />
+                </button>}
+
+                <FindFriendModal
+                    show={showFindFriendsModal}
+                    onClose={() => setShowFindFriendsModal(false)}
+                    newFriendAdded={() => fetchRequests()} />
             </div>
-        </div>
+        </div >
     );
 }
