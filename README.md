@@ -45,7 +45,8 @@ This is the frontend of the real-time chat app, built with **Next.js**. It provi
 3. **Environment variables**  
    Create a `.env.local`:
    ```env
-   NEXT_PUBLIC_API_BASE_URL=http://<your-backend-url> 
+   NEXT_PUBLIC_API_BASE_URL=http://<your-backend-url>/api
+   NEXT_PUBLIC_WEB_SOCKET_ENTRY_HOST=http://<your-backend-url> 
    ```
 
 4. **Run the app**
