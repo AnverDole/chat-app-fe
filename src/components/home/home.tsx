@@ -63,7 +63,7 @@ export default function Home() {
 
         chatSocketService.current.onMessageSeenUpdateNotification((message) => {
             
-            if (!message.seen_at)
+            // if (!message.seen_at)
                 chatMaster.markAsSeen(
                     message.id,
                     message.receiver_id
@@ -72,7 +72,7 @@ export default function Home() {
 
         chatSocketService.current.onMessageDeliveredUpdateNotification((message) => {
             
-            if (!message.downloaded_at)
+            // if (!message.downloaded_at)
                 chatMaster.markAsDelivered(
                     message.id,
                     message.receiver_id
@@ -142,11 +142,11 @@ export default function Home() {
                                 message_id: messageId
                             });
                             
-                            if (auth.user.id !== receiverId)
-                                chatMaster.markAsSeen(
-                                    messageId,
-                                    receiverId
-                                );
+                            // if (auth.user.id !== receiverId)
+                            //     chatMaster.markAsSeen(
+                            //         messageId,
+                            //         receiverId
+                            //     );
                         }}
                     />
                 </div>
