@@ -107,7 +107,7 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [receiver?.id.toLocaleString()]);
+    }, [receiver?.id]);
 
     return (
         <div
