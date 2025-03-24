@@ -102,6 +102,12 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
         }
 
     }, [chatMaster.context.allChats?.[receiver?.id.toString()]]);
+ 
+    useEffect(() => { 
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [receiver?.id.toLocaleString()]);
 
     return (
         <div
