@@ -63,7 +63,7 @@ export default function Home() {
 
         chatSocketService.current.onMessageSeenUpdateNotification((message) => {
             
-            if (auth.user.id !== message.sender_id)
+            if (!message.seen_at)
                 chatMaster.markAsSeen(
                     message.id,
                     message.receiver_id
@@ -142,7 +142,7 @@ export default function Home() {
                                 message_id: messageId
                             });
                             
-                            if (auth.user.id === receiverId)
+                            if (auth.user.id !== receiverId)
                                 chatMaster.markAsSeen(
                                     messageId,
                                     receiverId
