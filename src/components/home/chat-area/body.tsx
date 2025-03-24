@@ -88,8 +88,14 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
     }, [receiver.id]);
 
 
-    const sentByMeCount = useRef(0);
+    const sentByMeCount = useRef(null);
     useEffect(() => {
+        if (sentByMeCount.current == null && scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            sentByMeCount.current = 0;
+            return;
+        }
+
         let sentByMeCount_ = (chatMaster.context.allChats?.[receiver?.id.toString()] ?? [])
             .filter(m => m.isMe)
             .length;
@@ -101,13 +107,8 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
 
-    }, [chatMaster.context.allChats?.[receiver?.id.toString()]]);
- 
-    useEffect(() => { 
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    }, [receiver?.id]);
+    }, [receiver?.id, chatMaster.context.allChats?.[receiver?.id.toString()]]);
+
 
     return (
         <div
