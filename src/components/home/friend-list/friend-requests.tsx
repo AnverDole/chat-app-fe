@@ -139,7 +139,7 @@ export default function FriendRequests() {
                     }}>
 
                     {!isLoading && <>
-                        {results.length > 0 && results.map(friend => <div className="p-2 mb-2 bg-light  rounded-4   d-flex flex-column">
+                        {results.length > 0 && results.map(friend => <div key={friend.id} className="p-2 mb-2 bg-light  rounded-4   d-flex flex-column">
                             <div
                                 key={friend.id}
                                 className={``}
