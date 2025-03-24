@@ -1,4 +1,4 @@
-import { useChats } from "context/home-context";
+import { useChatMaster, useChats } from "context/home-context";
 import { useMemo, useState } from "react";
 
 export enum TabId {
@@ -12,16 +12,16 @@ interface Props {
 }
 
 export default function FriendListTabBar({ selectedTabId, onTabChange }: Props) {
-    const { allChats } = useChats();
+    const { context } = useChatMaster();
 
     const unreadCount = useMemo(() => {
         let count = 0;
-        Object.values(allChats).forEach((chat) => {
+        Object.values(context.allChats).forEach((chat) => {
             if (chat.filter(c => !c.isMe).filter(c => !c.seen_at).length > 0)
                 count++
         });
         return count;
-    }, [allChats]);
+    }, [context.allChats]);
     return (
         <div
             className="p-3"

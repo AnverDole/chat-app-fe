@@ -143,10 +143,10 @@ export default function Home() {
                             });
                             
                             // if (auth.user.id !== receiverId)
-                            //     chatMaster.markAsSeen(
-                            //         messageId,
-                            //         receiverId
-                            //     );
+                                chatMaster.markAsSeen(
+                                    messageId,
+                                    receiverId
+                                );
                         }}
                     />
                 </div>

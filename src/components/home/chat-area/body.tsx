@@ -66,6 +66,7 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
                 m.downloaded_at = !m.downloaded_at ? null : new Date(m.downloaded_at);
                 m.seen_at = !m.seen_at ? null : new Date(m.seen_at);
                 m.isMe = auth.user.id == m.sender_id;
+                
                 return m;
             }).toReversed();
 
@@ -102,7 +103,7 @@ export default function ChatAreaBody({ receiver, onSend, onSeen }: Props) {
                     {(chatMaster?.context.allChats?.[receiver.id.toString()] ?? [])?.map(msg => (
                         <VisibilitySensor
                             key={msg.id}
-                            onVisible={() => !msg.seen_at && onSeen(msg.id.toString(), receiver.id)}
+                            onVisible={() => {(!msg.isMe &&!msg.seen_at) && onSeen(msg.id.toString(), receiver.id) ;console.log(!!msg.seen_at)}}
                             once={true}>
                             <div className="px-3">
                                 {determineDateBadgeVisibility(msg) && <div

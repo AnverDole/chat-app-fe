@@ -1,6 +1,6 @@
 import Friend from 'interfaces/friend';
 import Message from 'interfaces/message';
-import { createContext, useContext, useState, ReactNode, Key, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, Key, useEffect, useRef } from 'react';
 
 
 interface HomeContextType {
@@ -52,12 +52,19 @@ export const useChatMaster = () => {
         throw new Error('useChatMaster must be used within a HomeProvider');
     }
 
+    const allChatsRef = useRef(context.allChats);
+
+    // Keep ref updated on re-renders
+    useEffect(() => {
+        allChatsRef.current = context.allChats;
+    }, [context.allChats]);
+
     return {
         context,
 
         pushNewMessage: (message: Message, receiverId: Key) => {
-            let current = context.allChats ?? {};
-            console.log(context.allChats)
+            let current = allChatsRef.current ?? {};
+            console.log(allChatsRef.current)
             const key = receiverId.toString();
             current[key] = [...(current[key] ?? []), message];
 
@@ -65,7 +72,7 @@ export const useChatMaster = () => {
         },
         markAsSeen: (messageId: Key, receiverId: Key) => {
           
-            let current = context?.allChats ?? {};
+            let current = allChatsRef.current ?? {};
 
             const key = receiverId.toString();
 
@@ -77,7 +84,7 @@ export const useChatMaster = () => {
             context?.updateAllChats({ ...current });
         },
         markAsDelivered: (messageId: Key, receiverId: Key) => {
-            let current = context?.allChats ?? {};
+            let current = allChatsRef.current ?? {};
 
             const key = receiverId.toString();
 
