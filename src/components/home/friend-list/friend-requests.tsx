@@ -13,17 +13,25 @@ import LdsRollerLoader from "components/loaders/lds-roller/lds-roller";
 import FindFriendModal from "./find-friend-modal";
 
 
-export default function FriendRequests() {
+interface Props {
+    sendFriendRequest?: (friendId: string) => void
+}
+
+export default function FriendRequests({
+    sendFriendRequest
+}: Props) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<FUser[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSearchApplied, setIsSearchApplied] = useState(false);
     const auth = useAuth();
     const [showFindFriendsModal, setShowFindFriendsModal] = useState<boolean>(false);
+    const [refreshRequired, setRefreshRequired] = useState<boolean>(false);
 
     const fetchRequests = async () => {
         setResults([]);
         setIsSearchApplied(false);
+        setRefreshRequired(false)
 
         if (isLoading)
             return;
@@ -341,8 +349,12 @@ export default function FriendRequests() {
 
                 <FindFriendModal
                     show={showFindFriendsModal}
-                    onClose={() => setShowFindFriendsModal(false)}
-                    newFriendAdded={() => fetchRequests()} />
+                    onClose={() => {setShowFindFriendsModal(false); refreshRequired && fetchRequests()}}
+                    newFriendAdded={() => fetchRequests()}
+                    sendFriendRequest={(friendId) => {
+                        sendFriendRequest?.(friendId)
+                        setRefreshRequired(true)
+                    }} />
             </div>
         </div >
     );

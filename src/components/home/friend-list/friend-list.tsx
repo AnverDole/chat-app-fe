@@ -19,11 +19,12 @@ export interface OnFriendSelectedHandler {
 export interface FriendListProps {
     selectedFriend: Friend | null,
     onFriendSelected: (friend: Friend) => void;
+    sendFriendRequest?: (friendId: string) => void;
 }
 
 
 
-export default function FriendList({ selectedFriend, onFriendSelected }: FriendListProps) {
+export default function FriendList({ selectedFriend, onFriendSelected, sendFriendRequest }: FriendListProps) {
     const { allChats } = useChats();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Friend[]>([]);
@@ -191,7 +192,8 @@ export default function FriendList({ selectedFriend, onFriendSelected }: FriendL
                                 <p className="text-center">You don’t have any friends yet. Click the button below to find and connect with them!</p>
 
                                 <AddFriendButton
-                                    position="relative" />
+                                    position="relative"
+                                    sendFriendRequest={sendFriendRequest} />
                             </div>}
 
                             {isSearchApplied && <div className="p-4 d-flex flex-column justify-content-center align-items-center h-100">
@@ -244,7 +246,8 @@ export default function FriendList({ selectedFriend, onFriendSelected }: FriendL
                                 <p className="text-center">Hmm... couldn’t find any friends with that search. Try tweaking it a bit!</p>
 
                                 <AddFriendButton
-                                    position="relative" />
+                                    position="relative"
+                                    sendFriendRequest={sendFriendRequest} />
                             </div>}
                         </>}
                     </>}
@@ -257,7 +260,8 @@ export default function FriendList({ selectedFriend, onFriendSelected }: FriendL
                 {results.length > 0 && <AddFriendButton
                     position="absolute"
                     bottom={20}
-                    right={20} />}
+                    right={20}
+                    sendFriendRequest={sendFriendRequest} />}
             </div>
         </div>
     );

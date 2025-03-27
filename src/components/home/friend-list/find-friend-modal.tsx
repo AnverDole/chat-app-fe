@@ -14,6 +14,7 @@ interface Props {
     show: boolean;
     onClose: () => void;
     newFriendAdded: () => void;
+    sendFriendRequest?: (friendId: string) => void;
 }
 
 
@@ -21,13 +22,14 @@ export default function FindFriendModal({
     show,
     onClose,
     newFriendAdded,
+    sendFriendRequest
 }: Props) {
     const auth = useAuth();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<FUser[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSearchApplied, setIsSearchApplied] = useState(false);
-
+ 
     const performSearch = async () => {
         setResults([]);
         setIsSearchApplied(false);
@@ -54,6 +56,19 @@ export default function FindFriendModal({
     }
     const performSendRequest = async (userId: Key, success: () => void) => {
         try {
+            if (sendFriendRequest) {
+                sendFriendRequest(userId.toString())
+                const friend = results.filter(u => u.id == userId)?.[0] ?? null;
+
+                if (friend) {
+                    updateFriendStatus(
+                        results.filter(u => u.id == userId)?.[0] ?? null,
+                        FriendStatus.Pending
+                    );
+                    return;
+                }
+            }
+
             const response = await sendRequest(userId, auth.token);
             response && success();
             response && toast.success("Friend request has been sent.");

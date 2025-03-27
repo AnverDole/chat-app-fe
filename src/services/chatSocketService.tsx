@@ -1,7 +1,9 @@
+import FriendRequest from 'interfaces/friend-request';
 import Message from 'interfaces/message';
 import { io, Socket } from 'socket.io-client';
 
 type EventCallback = (message: Message) => void;
+type FriendRequestReceivedEventCallback = (friendRequest: FriendRequest) => void;
 
 export class ChatSocketService {
     private socket: Socket | null = null;
@@ -11,6 +13,7 @@ export class ChatSocketService {
     private onMessageSentCallback?: EventCallback;
     private onMessageSeenUpdateNotificationCallback?: EventCallback;
     private onMessageDeliveredUpdateNotificationCallback?: EventCallback;
+    private onFriendRequestReceivedNotificationCallback?: FriendRequestReceivedEventCallback;
 
     init(token: string) {
         if (!token) return;
@@ -20,7 +23,7 @@ export class ChatSocketService {
             this.socket.disconnect();
             this.socket = null;
         }
-        
+
         this.socket = io(process.env.NEXT_PUBLIC_WEB_SOCKET_ENTRY_HOST, {
             auth: { token },
         });
@@ -52,6 +55,11 @@ export class ChatSocketService {
                 ...data,
             });
         });
+        this.socket.on('on_friend_request_received_notification', (data: FriendRequest) => {
+            this.onFriendRequestReceivedNotificationCallback?.({
+                ...data,
+            });
+        });
     }
     isInitialized() {
         return !!this.socket;
@@ -69,6 +77,9 @@ export class ChatSocketService {
     onMessageDeliveredUpdateNotification(cb: EventCallback) {
         this.onMessageDeliveredUpdateNotificationCallback = cb;
     }
+    onFriendRequestReceivedNotification(cb: FriendRequestReceivedEventCallback) {
+        this.onFriendRequestReceivedNotificationCallback = cb;
+    }
 
     sendMessage(payload: { receiver_id: string; message: string }) {
         this.socket?.emit('send_message', payload);
@@ -78,6 +89,9 @@ export class ChatSocketService {
     }
     sendOnDeliveredNotification(payload: { message_id: string }) {
         this.socket?.emit('send_message_delivered_notification', payload);
+    }
+    sendFriendRequest(payload: { friend_id: string }) {
+        this.socket?.emit('send_friend_request_notification', payload);
     }
 
     disconnect() {

@@ -10,7 +10,8 @@ interface Props {
     right?: number,
     width?: number,
     height?: number,
-    newFriendAdded?: () => void
+    newFriendAdded?: () => void,
+    sendFriendRequest?: (friendId: string) => void
 }
 export default function AddFriendButton({
     position = "relative",
@@ -18,7 +19,8 @@ export default function AddFriendButton({
     right = null,
     width = 55,
     height = 55,
-    newFriendAdded = () => { }
+    newFriendAdded,
+    sendFriendRequest
 }: Props) {
     const [showFindFriendsModal, setShowFindFriendsModal] = useState<boolean>(false);
 
@@ -42,7 +44,9 @@ export default function AddFriendButton({
             <FindFriendModal
                 show={showFindFriendsModal}
                 onClose={() => setShowFindFriendsModal(false)}
-                newFriendAdded={() => newFriendAdded?.()} />
+                newFriendAdded={() => newFriendAdded?.()}
+                sendFriendRequest={sendFriendRequest}
+            />
         </>
     );
 }

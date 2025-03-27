@@ -5,7 +5,7 @@ import FriendListTabBar, { TabId } from "./friend-list/tab-bar";
 import FriendList, { FriendListProps } from "./friend-list/friend-list";
 import FriendRequests from "./friend-list/friend-requests";
 
-export default function FriendsSideBar({ selectedFriend, onFriendSelected }: FriendListProps) {
+export default function FriendsSideBar({ selectedFriend, onFriendSelected, sendFriendRequest }: FriendListProps) {
     const [selectedTabId, setSelectedTab] = useState<TabId>(TabId.Friends);
 
     return (
@@ -21,9 +21,11 @@ export default function FriendsSideBar({ selectedFriend, onFriendSelected }: Fri
 
             {selectedTabId == TabId.Friends && <FriendList
                 selectedFriend={selectedFriend}
-                onFriendSelected={(f) => onFriendSelected(f)} />}
+                onFriendSelected={(f) => onFriendSelected(f)}
+                sendFriendRequest={sendFriendRequest} />}
 
-            {selectedTabId == TabId.Requests && <FriendRequests />}
+            {selectedTabId == TabId.Requests && <FriendRequests
+                sendFriendRequest={sendFriendRequest} />}
         </div>
     );
 }

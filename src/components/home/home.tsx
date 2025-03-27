@@ -2,16 +2,20 @@
 
 import ChatArea from "./chat-area";
 import HomeNav from "./home-nav/home-nav";
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import FriendsSideBar from "./side-bar";
 import { AuthRoute } from "route-guards/auth-route";
 import { useAuth } from "context/auth-context";
 import { HomeContext, HomeProvider, useChatMaster } from "context/home-context";
 import { useNotificationSound } from "hooks/notification-sound";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toasts } from 'react-toastify';
 import Message from "interfaces/message";
 import { ChatSocketService } from "services/chatSocketService";
-
+import hotToasts from "react-hot-toast";
+import FriendRequest from "interfaces/friend-request";
+import { X } from "react-bootstrap-icons";
+import { approveRequest, cancelRequest } from "services/friendsService";
+import LdsRollerLoader from "components/loaders/lds-roller/lds-roller";
 export function HomeWrapper() {
     return (
         <AuthRoute>
@@ -38,7 +42,7 @@ export default function Home() {
             chatSocketService.current.init(auth.token);
 
         chatSocketService.current.onReceiveMessage((message) => {
-            
+
             chatMaster.pushNewMessage(
                 { ...message, isMe: false },
                 message.sender_id
@@ -62,21 +66,25 @@ export default function Home() {
         });
 
         chatSocketService.current.onMessageSeenUpdateNotification((message) => {
-            
+
             // if (!message.seen_at)
-                chatMaster.markAsSeen(
-                    message.id,
-                    message.receiver_id
-                );
+            chatMaster.markAsSeen(
+                message.id,
+                message.receiver_id
+            );
         });
 
         chatSocketService.current.onMessageDeliveredUpdateNotification((message) => {
-            
+
             // if (!message.downloaded_at)
-                chatMaster.markAsDelivered(
-                    message.id,
-                    message.receiver_id
-                );
+            chatMaster.markAsDelivered(
+                message.id,
+                message.receiver_id
+            );
+        });
+
+        chatSocketService.current.onFriendRequestReceivedNotification((data) => {
+            showFriendRequestToast(data)
         });
 
         return () => {
@@ -108,7 +116,61 @@ export default function Home() {
         );
     }, [selectedFriendRef.current])
 
+    const showFriendRequestToast = (request: FriendRequest) => {
+        const handleAcceptFriendRequest = async (toastId, friendId) => {
+            approveRequest(friendId, auth.token).finally(() => { 
+                hotToasts.dismiss(toastId);
+            });
+        };
+
+        const handleRejectFriendRequest = async (toastId, friendId) => {
+            cancelRequest(friendId, auth.token).finally(() => { 
+                hotToasts.dismiss(toastId);
+            });
+        };
+
+        hotToasts.custom((t) => (
+            <div
+                className="d-flex flex-column align-items-start card shadow-sm pt-1 pb-3 px-3"
+            > 
+                <div>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <strong>New Friend Request</strong>
+                        <button
+                            className="btn btn-light p-0 rounded-circle"
+                            onClick={() => hotToasts.dismiss(t.id)}
+                            style={{
+                                width: 30,
+                                height: 30
+                            }}
+                        >
+                            <X />
+                        </button>
+                    </div>
+                    <p>{request.request.sender.first_name} {request.request.sender.last_name} wants to be your friend.</p>
+                </div>
+                <div className="d-flex flex-row align-items-end justify-content-end w-100">
+                    <button
+                        className="btn btn-danger"
+                        onClick={() => handleRejectFriendRequest(t.id, request.request.sender_user_id)}
+                    >
+                        Reject
+                    </button>
+                    <button
+                        className="btn btn-success ms-2"
+                        onClick={() => handleAcceptFriendRequest(t.id, request.request.sender_user_id)}
+                    >
+                        Approve
+                    </button>
+                </div>
+            </div>
+        ));
+    };
+
+
+
     return (
+
         <div className="container-xl" >
             <div
                 className=" pb-4"
@@ -127,7 +189,12 @@ export default function Home() {
 
                     <FriendsSideBar
                         selectedFriend={chatMaster.context.selectedFriend}
-                        onFriendSelected={(f) => chatMaster.context.setSelectedFriend(f)} />
+                        onFriendSelected={(f) => chatMaster.context.setSelectedFriend(f)}
+                        sendFriendRequest={(friendId) => {
+                            chatSocketService.current.sendFriendRequest({ friend_id: friendId.toString() })
+                        }
+
+                        } />
 
                     <ChatArea
                         receiver={chatMaster.context.selectedFriend}
@@ -141,12 +208,12 @@ export default function Home() {
                             chatSocketService.current.sendOnSeenDeliveryNotification({
                                 message_id: messageId
                             });
-                            
+
                             // if (auth.user.id !== receiverId)
-                                chatMaster.markAsSeen(
-                                    messageId,
-                                    receiverId
-                                );
+                            chatMaster.markAsSeen(
+                                messageId,
+                                receiverId
+                            );
                         }}
                     />
                 </div>
