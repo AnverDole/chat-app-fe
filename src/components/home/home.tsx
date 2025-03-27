@@ -8,7 +8,7 @@ import { AuthRoute } from "route-guards/auth-route";
 import { useAuth } from "context/auth-context";
 import { HomeContext, HomeProvider, useChatMaster } from "context/home-context";
 import { useNotificationSound } from "hooks/notification-sound";
-import { ToastContainer, toasts } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import Message from "interfaces/message";
 import { ChatSocketService } from "services/chatSocketService";
 import hotToasts from "react-hot-toast";
